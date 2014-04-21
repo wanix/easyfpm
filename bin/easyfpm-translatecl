@@ -1,0 +1,241 @@
+#!/usr/bin/ruby
+###############################################################################
+## Script : easyfpm-translatecl
+## Author : Erwan SEITE
+## Aim    : Translate an easyfpm changelog file to a deb or rpm changelog
+## Source : https://github.com/wanix/easyfpm.git
+###############################################################################
+
+#Inclusion des bibliotheques necessaires
+require 'optparse'
+require 'time'
+
+###############################################################################
+## Functions
+###############################################################################
+
+##################################
+## translate_to_rpm_cl
+##  Change a easyfpm changelog to an rpm changelog
+##  rmp cl format : http://docs.fedoraproject.org/en-US/Fedora_Draft_Documentation/0.1/html/Packagers_Guide/sect-Packagers_Guide-Creating_a_Basic_Spec_File.html
+##################################
+# easyfpmFileRegExp : array of Regexp
+# easyfpmcl : path to a txt file in an easyfpm changelog format
+##################################
+def translate_to_rpm_cl (easyfpmFileRegExp, filename, defaultDate = Time.now)
+  returnCode = 0
+  lineNumber=0
+  errorsLine = []
+  myChangelog = File.new(filename, "r")
+  entete = {}
+  while (myLine = myChangelog.gets)
+    lineNumber += 1
+    commentLine = easyfpmFileRegExp[:comment].match (myLine)
+    #If we have a comment, we ignore it
+    next if commentLine
+    ignoredLine = easyfpmFileRegExp[:ignored].match (myLine)
+    #Line we have explicitely to ignore
+    next if ignoredLine
+    headerLine = easyfpmFileRegExp[:header].match (myLine)
+    if headerLine
+      #header line is found, we analyse it
+      #if a header was here before, we display a cariage return
+      puts "" if entete.length > 0
+      entete.clear
+      if headerLine[1]
+        entete[:date] = Time.parse(headerLine[1])
+      elsif defaultDate 
+        entete[:date] = defaultDate
+      else
+        entete[:date] = Time.now
+      end
+      entete[:version] = headerLine[4] if headerLine[4]
+      if headerLine[7]
+        entete[:author] = headerLine[7]
+      else
+        entete[:author] = headerLine[9]
+      end
+      entete[:mail] = headerLine[8] if headerLine[8]
+
+      #Header in a RedHat format
+      puts "* " + entete[:date].strftime("%a %b %d %Y") + " " + entete[:author] + " <" + entete[:mail] + "> " + entete[:version]
+      next
+    end
+    descriptionLine = easyfpmFileRegExp[:description].match (myLine)
+    if descriptionLine
+      puts descriptionLine[1] + "- " + descriptionLine[3]
+      next 
+    end
+
+    #A line we can't analyse
+    errorsLine.push("  line " + lineNumber.to_s + " : " + myLine) 
+    returnCode=1
+  end
+
+  if errorsLine.length > 0
+    $stderr.puts "Error : the followning(s) line(s) are not in easyfpm changelog format :"
+    errorsLine.each { |error| $stderr.puts(error) }
+  end
+  exit returnCode
+end
+
+##################################
+## translate_to_deb_cl
+##  Change a easyfpm changelog to a deb changelog
+##  deb cl format : https://www.debian.org/doc/debian-policy/ch-source.html
+##################################
+# easyfpmFileRegExp : array of Regexp
+# easyfpmcl : path to a txt file in an easyfpm changelog format
+# defaultDate : Date to display if none in the header line
+# pkgname : Package name
+# distribution : Distribution name
+# urgency : urgency tag
+##################################
+def translate_to_deb_cl (easyfpmFileRegExp, filename, defaultDate = Time.now, pkgname, distribution, urgency)
+  returnCode = 0
+  lineNumber=0
+  errorsLine = []
+  myChangelog = File.new(filename, "r")
+  entete = {}
+  while (myLine = myChangelog.gets)
+    lineNumber += 1
+    commentLine = easyfpmFileRegExp[:comment].match (myLine)
+    #Si on tombe sur un commentaire, on ignore
+    next if commentLine
+    ignoredLine = easyfpmFileRegExp[:ignored].match (myLine)
+    #Si on tombe sur une ligne explicitement a ignorer
+    next if ignoredLine
+    headerLine = easyfpmFileRegExp[:header].match (myLine)
+    if headerLine
+      #Une ligne d'entete est trouvee, on la decompose
+      #Si c'est une nouvelle ligne, on saute un retour chariot
+      if entete.length != 0
+        #L'entete precedente est terminee, on la clos et on en ouvre une nouvelle
+        puts "-- " + entete[:author] + " <" + entete[:mail] + ">  " + entete[:date].strftime("%a %d %b %Y %H:%M:%S %z")
+        puts ""
+      end
+      entete.clear
+      if headerLine[1]
+        entete[:date] = Time.parse(headerLine[1])
+      elsif defaultDate 
+        entete[:date] = defaultDate
+      else
+        entete[:date] = Time.now
+      end
+      entete[:version] = headerLine[4] if headerLine[4]
+      if headerLine[7]
+        entete[:author] = headerLine[7]
+      else
+        entete[:author] = headerLine[9]
+      end
+      entete[:mail] = headerLine[8] if headerLine[8]
+
+      #Affichage de l'entete au format Debian
+      puts pkgname + " (" + entete[:version] + ") " + distribution + "; urgency=" + urgency
+      next
+    end
+    descriptionLine = easyfpmFileRegExp[:description].match (myLine)
+    if descriptionLine
+      if descriptionLine[1].length == 2
+        puts "  * " + descriptionLine[3]
+      else
+        puts myLine
+      end
+      next 
+    end
+
+    #A line we can't analyse
+    errorsLine.push("  line " + lineNumber.to_s + " : " + myLine) 
+    returnCode=1
+  end
+  if entete.length != 0
+    #La derniere entete precedente terminee, on la clos
+    puts "-- " +  entete[:author] + " <" + entete[:mail] + ">  " + entete[:date].strftime("%a %d %b %Y %H:%M:%S %z")
+  end
+
+  if errorsLine.length > 0
+    $stderr.puts "Error : the followning(s) line(s) are not in easyfpm changelog format :"
+    errorsLine.each { |error| $stderr.puts(error) }
+  end
+
+  exit returnCode
+end
+
+###############################################################################
+## Main
+###############################################################################
+#Prise en charge des options
+options = {}
+optparse = OptionParser.new do |opts|
+  opts.banner = "Usage easyfpm-translatecl [options]"
+
+  opts.on("-f", "--file [PATH]", String, "easyfpm changelog format file") do |opt|
+    options[:file] = opt
+  end
+
+  opts.on("-t", "--translation [deb|rpm]", String, "deb or rpm translation (default rpm)") do |opt|
+    options[:translate] = opt.downcase
+  end
+
+  opts.on("-d", "--date [DATE]", String, "defaut date if don't exists, format '%Y-%m-%d %H:%M:%S'") do |opt|
+    options[:date] = Time.parse(opt)
+  end
+
+  opts.on("-p", "--package [PACKAGE NAME]", String, "Package name needed for Debian (default dirname of filepath given)") do |opt|
+    options[:package] = opt
+  end
+
+  opts.on("-u", "--urgency [PACKAGE URGENCY]", String, "urgency needed for Debian (default low)") do |opt|
+    options[:urgency] = opt
+  end
+
+  opts.on("-D", "--distribution [Debian Distribution]", String, "Debian Distribution (default stable)") do |opt|
+    options[:distribution] = opt
+  end
+
+  opts.on("-h", "--help", "Display help") do |opt|
+    puts opts
+    exit
+  end
+end
+
+#Analyse des options donnees
+begin 
+  optparse.parse!
+  options[:translate] = "rpm" if options[:translate].nil?
+  raise OptionParser::MissingArgument if options[:file].nil?
+  raise OptionParser::InvalidArgument unless File.readable?(options[:file])
+  raise OptionParser::InvalidArgument unless ( (options[:translate] == "deb") || (options[:translate] == "rpm") )
+rescue OptionParser::MissingArgument, OptionParser::InvalidArgument
+  $stderr.puts $!.to_s
+  $stderr.puts optparse
+  exit 1
+end
+
+easyfpmRegexp={}
+easyfpmRegexp[:comment] = /^\s*#/ 
+easyfpmRegexp[:header] = /^\s*((\d{4}-?\d{2}-?\d{2}) (\d{2}:\d{2}:\d{2} )?)?Version (\d+\.\d+(\.\d+)?(-\d+)?) (.+? )?\(((.+?)@.+?\.[\d\w]+)\)\s*$/i 
+easyfpmRegexp[:description] = /^((  )+)(.+)$/
+easyfpmRegexp[:ignored] = /^\s*$/
+if (options[:translate] == "rpm")
+  translate_to_rpm_cl(easyfpmRegexp, options[:file], options[:date])
+elsif (options[:translate] == "deb")
+  if options[:package]
+    pkgname = options[:package]
+  else
+    pkgname = File.basename(File.dirname(options[:file]))
+  end
+  if options[:urgency]
+    urgency = options[:urgency]
+  else
+    urgency = "low"
+  end
+  if options[:distribution]
+    distribution = options[:distribution]
+  else
+    distribution = "stable"
+  end
+  translate_to_deb_cl(easyfpmRegexp, options[:file], options[:date], pkgname, distribution, urgency)
+end
+
+exit 0
