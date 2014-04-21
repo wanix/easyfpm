@@ -1,9 +1,10 @@
 #!/usr/bin/ruby
 ###############################################################################
-## Script : easyfpm-translatecl
-## Author : Erwan SEITE
-## Aim    : Translate an easyfpm changelog file to a deb or rpm changelog
-## Source : https://github.com/wanix/easyfpm.git
+## Script  : easyfpm-translatecl
+## Author  : Erwan SEITE
+## Aim     : Translate an easyfpm changelog file to a deb or rpm changelog
+## Licence : GPL v2
+## Source  : https://github.com/wanix/easyfpm.git
 ###############################################################################
 
 #Libraries needed
