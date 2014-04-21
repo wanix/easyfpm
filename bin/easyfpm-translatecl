@@ -6,7 +6,7 @@
 ## Source : https://github.com/wanix/easyfpm.git
 ###############################################################################
 
-#Inclusion des bibliotheques necessaires
+#Libraries needed
 require 'optparse'
 require 'time'
 
@@ -100,17 +100,16 @@ def translate_to_deb_cl (easyfpmFileRegExp, filename, defaultDate = Time.now, pk
   while (myLine = myChangelog.gets)
     lineNumber += 1
     commentLine = easyfpmFileRegExp[:comment].match (myLine)
-    #Si on tombe sur un commentaire, on ignore
+    #If we have a comment, we ignore it
     next if commentLine
     ignoredLine = easyfpmFileRegExp[:ignored].match (myLine)
-    #Si on tombe sur une ligne explicitement a ignorer
+    #Line we have explicitely to ignore
     next if ignoredLine
     headerLine = easyfpmFileRegExp[:header].match (myLine)
     if headerLine
-      #Une ligne d'entete est trouvee, on la decompose
-      #Si c'est une nouvelle ligne, on saute un retour chariot
+      #header line is found, we analyse it
+      #if a header was here before, we display the debian style footer for the last one
       if entete.length != 0
-        #L'entete precedente est terminee, on la clos et on en ouvre une nouvelle
         puts "-- " + entete[:author] + " <" + entete[:mail] + ">  " + entete[:date].strftime("%a %d %b %Y %H:%M:%S %z")
         puts ""
       end
@@ -130,7 +129,7 @@ def translate_to_deb_cl (easyfpmFileRegExp, filename, defaultDate = Time.now, pk
       end
       entete[:mail] = headerLine[8] if headerLine[8]
 
-      #Affichage de l'entete au format Debian
+      #Debian style header
       puts pkgname + " (" + entete[:version] + ") " + distribution + "; urgency=" + urgency
       next
     end
@@ -149,7 +148,7 @@ def translate_to_deb_cl (easyfpmFileRegExp, filename, defaultDate = Time.now, pk
     returnCode=1
   end
   if entete.length != 0
-    #La derniere entete precedente terminee, on la clos
+    #We put the footer for the last header
     puts "-- " +  entete[:author] + " <" + entete[:mail] + ">  " + entete[:date].strftime("%a %d %b %Y %H:%M:%S %z")
   end
 
@@ -199,7 +198,7 @@ optparse = OptionParser.new do |opts|
   end
 end
 
-#Analyse des options donnees
+#Looking for options valuability
 begin 
   optparse.parse!
   options[:translate] = "rpm" if options[:translate].nil?
