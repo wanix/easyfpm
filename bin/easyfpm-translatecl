@@ -31,13 +31,13 @@ def translate_to_rpm_cl (easyfpmFileRegExp, filename, defaultDate = Time.now)
   entete = {}
   while (myLine = myChangelog.gets)
     lineNumber += 1
-    commentLine = easyfpmFileRegExp[:comment].match (myLine)
+    commentLine = easyfpmFileRegExp[:comment].match(myLine)
     #If we have a comment, we ignore it
     next if commentLine
-    ignoredLine = easyfpmFileRegExp[:ignored].match (myLine)
+    ignoredLine = easyfpmFileRegExp[:ignored].match(myLine)
     #Line we have explicitely to ignore
     next if ignoredLine
-    headerLine = easyfpmFileRegExp[:header].match (myLine)
+    headerLine = easyfpmFileRegExp[:header].match(myLine)
     if headerLine
       #header line is found, we analyse it
       #if a header was here before, we display a cariage return
@@ -62,7 +62,7 @@ def translate_to_rpm_cl (easyfpmFileRegExp, filename, defaultDate = Time.now)
       puts "* " + entete[:date].strftime("%a %b %d %Y") + " " + entete[:author] + " <" + entete[:mail] + "> " + entete[:version]
       next
     end
-    descriptionLine = easyfpmFileRegExp[:description].match (myLine)
+    descriptionLine = easyfpmFileRegExp[:description].match(myLine)
     if descriptionLine
       puts descriptionLine[1] + "- " + descriptionLine[3]
       next 
@@ -92,21 +92,21 @@ end
 # distribution : Distribution name
 # urgency : urgency tag
 ##################################
-def translate_to_deb_cl (easyfpmFileRegExp, filename, defaultDate = Time.now, pkgname, distribution, urgency)
+def translate_to_deb_cl (easyfpmFileRegExp, filename, defaultDate = Time.now, pkgname = nil, distribution = nil, urgency = "low")
   returnCode = 0
-  lineNumber=0
+  lineNumber = 0
   errorsLine = []
   myChangelog = File.new(filename, "r")
   entete = {}
   while (myLine = myChangelog.gets)
     lineNumber += 1
-    commentLine = easyfpmFileRegExp[:comment].match (myLine)
+    commentLine = easyfpmFileRegExp[:comment].match(myLine)
     #If we have a comment, we ignore it
     next if commentLine
-    ignoredLine = easyfpmFileRegExp[:ignored].match (myLine)
+    ignoredLine = easyfpmFileRegExp[:ignored].match(myLine)
     #Line we have explicitely to ignore
     next if ignoredLine
-    headerLine = easyfpmFileRegExp[:header].match (myLine)
+    headerLine = easyfpmFileRegExp[:header].match(myLine)
     if headerLine
       #header line is found, we analyse it
       #if a header was here before, we display the debian style footer for the last one
@@ -134,7 +134,7 @@ def translate_to_deb_cl (easyfpmFileRegExp, filename, defaultDate = Time.now, pk
       puts pkgname + " (" + entete[:version] + ") " + distribution + "; urgency=" + urgency
       next
     end
-    descriptionLine = easyfpmFileRegExp[:description].match (myLine)
+    descriptionLine = easyfpmFileRegExp[:description].match(myLine)
     if descriptionLine
       if descriptionLine[1].length == 2
         puts "  * " + descriptionLine[3]
