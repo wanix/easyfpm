@@ -111,7 +111,7 @@ def translate_to_deb_cl (easyfpmFileRegExp, filename, defaultDate = Time.now, pk
       #header line is found, we analyse it
       #if a header was here before, we display the debian style footer for the last one
       if entete.length != 0
-        puts "-- " + entete[:author] + " <" + entete[:mail] + ">  " + entete[:date].strftime("%a %d %b %Y %H:%M:%S %z")
+        puts " -- " + entete[:author] + " <" + entete[:mail] + ">  " + entete[:date].strftime("%a %d %b %Y %H:%M:%S %z")
         puts ""
       end
       entete.clear
@@ -150,7 +150,7 @@ def translate_to_deb_cl (easyfpmFileRegExp, filename, defaultDate = Time.now, pk
   end
   if entete.length != 0
     #We put the footer for the last header
-    puts "-- " +  entete[:author] + " <" + entete[:mail] + ">  " + entete[:date].strftime("%a %d %b %Y %H:%M:%S %z")
+    puts " -- " +  entete[:author] + " <" + entete[:mail] + ">  " + entete[:date].strftime("%a %d %b %Y %H:%M:%S %z")
   end
 
   if errorsLine.length > 0
@@ -214,7 +214,7 @@ end
 
 easyfpmRegexp={}
 easyfpmRegexp[:comment] = /^\s*#/ 
-easyfpmRegexp[:header] = /^\s*((\d{4}-?\d{2}-?\d{2}) (\d{2}:\d{2}:\d{2} )?)?Version (\d+\.\d+(\.\d+)?(-\d+)?) (.+? )?\(((.+?)@.+?\.[\d\w]+)\)\s*$/i 
+easyfpmRegexp[:header] = /^\s*((\d{4}-?\d{2}-?\d{2}) (\d{2}:\d{2}:\d{2} )?)?Version (\d+\.\d+(\.\d+)?(-\d+)?) (.+? )?\(((.+?)(@| at ).+?\.[\d\w]+)\)\s*$/i 
 easyfpmRegexp[:description] = /^((  )+)(.+)$/
 easyfpmRegexp[:ignored] = /^\s*$/
 if (options[:translate] == "rpm")
