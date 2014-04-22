@@ -1,0 +1,9 @@
+################################################################################
+## Package: easyfpm
+## Source: https://github.com/wanix/easyfpm.git
+################################################################################
+
+20140416 09:38:00 Version 1.0 Erwan SEITE (wanix.fr@gmail.com)
+  First version on github
+  add easyfpm-translatecl to manage changelog formats for packages
+
