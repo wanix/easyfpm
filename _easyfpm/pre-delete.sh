@@ -11,7 +11,9 @@
 ##############################################################################
 # Parameters (launched by installation process) : 
 #  If Debian based OS
-#    $1=
+#    $1=remove if deletion or purge
+#    $1=upgrade if upgrade
+#    $2=<new version> if upgrade
 #  If Redhat based OS
 #    $1=0 if deletion
 #    $1=1 if upgrade

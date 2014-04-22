@@ -11,7 +11,9 @@
 ##############################################################################
 # Parameters (launched by installation process) : 
 #  If Debian based OS
-#    $1=
+#    $1=install if install
+#    $1=upgrade if upgrade
+#    $2=<old version> if upgrade
 #  If Redhat based OS
 #    $1=1 if install
 #    $1=2 if upgrade
