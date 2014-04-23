@@ -31,6 +31,7 @@ case ${myOperation} in
                   exit 0;;
   abort-upgrade)  #Debian:
                   #new-postrm abort-upgrade <old-version>
+                  exit 0;;
   \?)             #Unknown
                   exit 1;;
   *)              exit 1;;

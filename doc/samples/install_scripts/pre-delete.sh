@@ -22,6 +22,7 @@ case ${myOperation} in
                   exit 0;;
   failed-upgrade) #Debian:
                   #new-prerm failed-upgrade <old-version>
+                  exit 0;;
   \?)             #Unknown
                   exit 1;;
   *)              exit 1;;
