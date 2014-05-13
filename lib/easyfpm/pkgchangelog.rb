@@ -30,16 +30,36 @@ class EASYFPM::PkgChangelog
     self.urgency = "low"
   end
 
-  #Write a RPM format changelog
-  #Parameters:
-  # fileToWrite : String, path to a file
-  def writeRPM (fileToWrite)
-    File.open(fileToWrite,'w') do |file|
-      self.printRPM(file)
-    end
-  end
+  def write (format, fileToWrite)
+    raise ArgumentError, 'the argument "format" must be a String' unless format.is_a? String
+    raise ArgumentError, 'the argument "fileToWrite" must be a String' unless fileToWrite.is_a? String
 
-  #Write a RPM format changelog on an IO obj
+    File.open(fileToWrite,'w') do |file|
+      case format.downcase
+        when "deb", "rpm"
+          return self.print(format,file)
+      else
+          raise EASYFPM::InvalidChangelogFormat, "The format #{format} is not (yet) implemented"
+      end
+    end
+  end #write
+
+  def print (format, io_obj=$stdout)
+    raise ArgumentError, 'the argument "format" must be a String' unless format.is_a? String
+    raise ArgumentError, 'the argument "io_obj" must be an IO class or an IO inherited class' unless io_obj.is_a? IO
+
+    case format.downcase
+      when "deb"
+        return printDEB(io_obj)
+      when "rpm"
+        return printRPM(io_obj)
+    else
+        raise EASYFPM::InvalidChangelogFormat, "The format #{format} is not implemented"
+    end
+  end #write
+
+
+  #(private) Write a RPM format changelog on an IO obj
   #Parameters:
   # io_obj : IO 
   def printRPM (io_obj=$stdout)
@@ -97,17 +117,9 @@ class EASYFPM::PkgChangelog
     end
     return returnCode
   end #printRPM
+  private :printRPM
 
-  #Write a DEB format changelog
-  #Parameters:
-  # fileToWrite : String, path to a file
-  def writeDEB (fileToWrite)
-    File.open(fileToWrite,'w') do |file|
-      return self.printDEB(file)
-    end
-  end
-
-  #Write a DEB format changelog on an IO obj
+  #(private) Write a DEB format changelog on an IO obj
   #Parameters:
   # io_obj : IO 
   def printDEB (io_obj=$stdout)
@@ -177,5 +189,6 @@ class EASYFPM::PkgChangelog
 
     return returnCode
   end #printDEB
+  private :printDEB
 
 end

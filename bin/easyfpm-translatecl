@@ -72,6 +72,5 @@ easyfpmcl.defaultDate = options[:date] if options.key? :date
 easyfpmcl.pkgname = options[:package] if options.key? :package
 easyfpmcl.distribution = options[:distribution] if options.key? :distribution
 easyfpmcl.urgency = options[:urgency] if options.key? :urgency
-  
-exit(easyfpmcl.printDEB() || 0) if options[:translate] == "deb"
-exit(easyfpmcl.printRPM() || 0) if options[:translate] == "rpm"
+
+exit(easyfpmcl.print(options[:translate]) || 0)
