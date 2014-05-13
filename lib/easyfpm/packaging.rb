@@ -1,5 +1,5 @@
 ###############################################################################
-## Class   : EASYFPM::CommandLine
+## Class   : EASYFPM::Packaging
 ## Author  : Erwan SEITE
 ## Aim     : Manage EASYFPM Command Line
 ## Licence : GPL v2
@@ -7,6 +7,7 @@
 ###############################################################################
 require "easyfpm"
 require "unixconfigstyle"
+require "tempfile"
 
 class EASYFPM::Packaging
 
@@ -16,13 +17,14 @@ class EASYFPM::Packaging
   #Initialize the class
   def initialize(unixconfigstyle)
     raise ArgumentError, 'the argument must be an UnixConfigStyle object' unless unixconfigstyle.is_a? UnixConfigStyle
-    @easyfpmconf = unixconfigstyle
+    @easyfpmconf = EASYFPM::Configuration.new(unixconfigstyle)
     self.verbose = false
     self.dryrun = false
   end
 
   #Create the packages
   def make()
+    @easyfpmconf.print
     return true
   end
 
