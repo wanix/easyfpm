@@ -45,7 +45,8 @@ class EASYFPM::Configuration
     puts matchData
   end
   private :replaceTemplateVar
- 
+
+  # Print the configuration in UnixConfigStyle format
   def print()
     @conf.print()
   end
