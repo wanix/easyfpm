@@ -23,14 +23,17 @@ class EASYFPM::Configuration
   # (private) replace the easyfpm vars value
   def replaceTemplateVars()
     #We start to scan each value if a var is present
-    @conf.getKeys.each do |myKey|
-      @conf.getValues(myKey).each_index do |myValueIndex|
-        if containTemplateVar? @conf.getValue(myKey, myValueIndex)
-          replaceTemplateVar(@conf.getValue(myKey, myValueIndex))
-          #@conf.replaceValue(replaceTemplateVar(@easyfpmconf.getValue(myKey, myValueIndex)),myKey,myValueIndex)
-        end
-      end
-    end
+    return false if @conf.isEmpty?
+    if @conf.haveKeys?
+      @conf.getKeys.each do |myKey|
+        @conf.getValues(myKey).each_index do |myValueIndex|
+          if containTemplateVar? @conf.getValue(myKey, myValueIndex)
+            replaceTemplateVar(@conf.getValue(myKey, myValueIndex))
+            #@conf.replaceValue(replaceTemplateVar(@easyfpmconf.getValue(myKey, myValueIndex)),myKey,myValueIndex)
+          end
+        end #@conf.getValues(myKey).each_index
+      end #@conf.getKeys.each do
+    end #if @conf.haveKeys?
   end #replaceTemplateVars
   private :replaceTemplateVars
 
@@ -49,14 +52,16 @@ class EASYFPM::Configuration
 
   # (private) return a string with vars replaced if a corresponding value is found
   def replaceTemplateVar(myString)
-    matchData = @@templateVarExpReg.match(myString)
-    puts matchData
+    #foreach matchdata on each string
+    myString.to_enum(:scan, @@templateVarExpReg).map { Regexp.last_match }.each do |matchData|
+      puts matchData[2]
+    end #myString.to_enum(:scan...
   end
   private :replaceTemplateVar
 
   # Print the configuration in UnixConfigStyle format
-  def print()
-    @conf.print()
+  def print(easyfpmSectionName=nil)
+    #@conf.print()
   end
  
 end
