@@ -23,8 +23,8 @@ class EASYFPM::Packaging
   end
 
   #Create the packages
-  def make()
-    @easyfpmconf.print
+  def make(easyfpmSectionName=nil)
+    @easyfpmconf.print(easyfpmSectionName)
     return true
   end
 
