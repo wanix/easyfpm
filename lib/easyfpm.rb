@@ -8,6 +8,7 @@
 
 require "easyfpm/namespace"
 require "easyfpm/version"
-require "easyfpm/exceptions.rb"
+require "easyfpm/exceptions"
+require "easyfpm/configuration"
 require "easyfpm/packaging"
 require "easyfpm/pkgchangelog"
