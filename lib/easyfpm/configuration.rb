@@ -17,6 +17,7 @@ class EASYFPM::Configuration
     raise ArgumentError, 'the argument must be an UnixConfigStyle object' unless unixconfigstyle.is_a? UnixConfigStyle
     @conf = unixconfigstyle
     replaceTemplateVars()
+    validate()
   end
 
   # (private) replace the easyfpm vars value
@@ -32,6 +33,13 @@ class EASYFPM::Configuration
     end
   end #replaceTemplateVars
   private :replaceTemplateVars
+
+  # (private) Validate the given configuration and clean it if necessary
+  def validate
+    #We have to analyse each parameters for the global conf and for each section conf
+    return true
+  end
+  private :validate
 
   # (private) return true if the string contain at list one var
   def containTemplateVar?(myString)
