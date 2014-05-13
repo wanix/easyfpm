@@ -13,6 +13,7 @@ class EASYFPM::CommandLine
     @easyfpmconf = UnixConfigStyle.new()
     @verbose = false
     @dryrun = false
+    parse()
   end
 
 
@@ -173,7 +174,6 @@ class EASYFPM::CommandLine
   # Run the instructions given by command line
   # Parse the command line arguments and then create packages
   def run(*args)
-    parse()
     easyfpmpkg = EASYFPM::Packaging.new(@easyfpmconf)
     easyfpmpkg.verbose = @verbose
     easyfpmpkg.dryrun = @dryrun
