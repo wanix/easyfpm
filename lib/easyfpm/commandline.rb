@@ -13,6 +13,7 @@ class EASYFPM::CommandLine
     @easyfpmconf = UnixConfigStyle.new()
     @verbose = false
     @dryrun = false
+    @labels = []
     parse()
   end
 
@@ -24,10 +25,14 @@ class EASYFPM::CommandLine
     optparse = OptionParser.new do |opts|
       opts.banner = "Usage easyfpm [options]"
 
-      opts.on("--config-file [string]", String, "Configuration file's path", " (can be declared multiple time, declarative order is priority order)") do |opt|
+      opts.on("--config-file [string]", String, "Configuration file's path", " (can be declared multiple times, declarative order is priority order)") do |opt|
         easyfpmconffiles.push(opt)
       end
 
+      opts.on("--label [list by comma]", String, "Labels to work with", " (can be declared multiple times)") do |opt|
+        @labels.concat(opt.split(','))
+      end
+ 
       opts.on("--pkg-src-dir [string]", String, "Package source dir") do |opt|
         @easyfpmconf.addValues(opt,"pkg-src-dir")
       end
@@ -128,7 +133,7 @@ class EASYFPM::CommandLine
         @easyfpmconf.addValues(opt,"pkg-type")
       end
 
-      opts.on("--pkg-depends [string]", String, "Package dependancie"," (can be declared multiple time)") do |opt|
+      opts.on("--pkg-depends [string]", String, "Package dependancie"," (can be declared multiple times)") do |opt|
         @easyfpmconf.addValues(opt,"pkg-depends")
       end
 
@@ -171,13 +176,21 @@ class EASYFPM::CommandLine
     @easyfpmconf.print()
   end #print
 
-  # Run the instructions given by command line
-  # Parse the command line arguments and then create packages
-  def run(*args)
-    easyfpmpkg = EASYFPM::Packaging.new(@easyfpmconf)
-    easyfpmpkg.verbose = @verbose
-    easyfpmpkg.dryrun = @dryrun
-    easyfpmpkg.make()
+  # Run the command line given
+  #def run(*args)
+  def run()
+    if @labels.empty?
+      easyfpmpkg = EASYFPM::Packaging.new(@easyfpmconf)
+      easyfpmpkg.verbose = @verbose
+      easyfpmpkg.dryrun = @dryrun
+      easyfpmpkg.make()
+    else
+      @labels.each do |label|
+        easyfpmpkg = EASYFPM::Packaging.new(@easyfpmconf,label)
+        easyfpmpkg.verbose = @verbose
+        easyfpmpkg.dryrun = @dryrun
+        easyfpmpkg.make()
+      end
+    end
   end #run
-
 end

@@ -15,17 +15,16 @@ class EASYFPM::Packaging
   attr_accessor :dryrun
 
   #Initialize the class
-  def initialize(unixconfigstyle)
+  def initialize(unixconfigstyle, specificLabel=nil)
     raise ArgumentError, 'the argument must be an UnixConfigStyle object' unless unixconfigstyle.is_a? UnixConfigStyle
-    @easyfpmconf = EASYFPM::Configuration.new(unixconfigstyle)
+    @easyfpmconf = EASYFPM::Configuration.new(unixconfigstyle, specificLabel)
     self.verbose = false
     self.dryrun = false
-  end
+  end #initialize
 
   #Create the packages
-  def make(easyfpmSectionName=nil)
-    @easyfpmconf.print(easyfpmSectionName)
+  def make()
+    @easyfpmconf.print()
     return true
-  end
-
+  end #make
 end
