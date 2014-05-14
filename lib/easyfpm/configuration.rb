@@ -77,7 +77,16 @@ class EASYFPM::Configuration
             @conf[label][param]=unixconfigstyle.getValues(param,confsection,true).last.strip
         end #case
       end #allkeys.each
+
+      #Now, we have specific rules :
+      #If we have a mapping AND a content, we delete the content
+      @conf[label].delete("pkg-content") if (@conf[label].has_key? "pkg-content" and @conf[label].has_key? "pkg-mapping")
+      #If we have an easyfpm-pkg-changelog AND a pkg-changelog, the pkg-changelog stay
+      @conf[label].delete("easyfpm-pkg-changelog") if (@conf[label].has_key? "easyfpm-pkg-changelog" and @conf[label].has_key? "pkg-changelog")
+
     end #@conf.each_key
+
+    
 
   end #createconf
 
@@ -166,7 +175,6 @@ class EASYFPM::Configuration
           #pkg-content can be replaced by pkg-mapping (higher priority for this last one)
           #If no mapping, all the files or directories given must existsi and be readable in pkg-src-dir
           when "pkg-content"
-            next if @conf[label].has_key? "pkg-mapping"
             next unless @conf[label].has_key? "pkg-src-dir"
             #If we already have an error on pkg-src-dir, next
             next unless File.directory?(@conf[label]["pkg-src-dir"])
@@ -175,13 +183,8 @@ class EASYFPM::Configuration
             end
 
           #the followings parameters must be readable files
-          when "pkg-mapping","pkg-changelog","pkg-preinst","pkg-postinst","pkg-prerm","pkg-postrm"
+          when "pkg-mapping","easyfpm-pkg-changelog","pkg-changelog","pkg-preinst","pkg-postinst","pkg-prerm","pkg-postrm"
              errorlist.push(displaylabel+"The file #{@conf[label][param]} (given by --#{param}) MUST be readable") unless (File.readable?(@conf[label][param]))
-
-          #easyfpm-pkg-changelog has lesser priority than pkg-changelog
-          when "easyfpm-pkg-changelog"
-            next if @conf[label].has_key? "pkg-changelog"
-            errorlist.push(displaylabel+"The file #{@conf[label][param]} (given by --#{param}) MUST be readable") unless (File.readable?(@conf[label][param]))
 
           #the following parameters must be writable directories
           when "pkg-output-dir"
@@ -240,4 +243,23 @@ class EASYFPM::Configuration
     end #@conf[specificLabel].each_key
   end
   private :printLabelConf
+
+  #return true if any labels are defined
+  def hasLabels?()
+    return false if @conf.has_key? @@defaultLabelName
+    return true
+  end
+
+  #return all labels into Array, nil if no labels
+  def getLabels()
+    return nil unless hasLabels?()
+    return @conf.keys()
+  end
+
+  #return an hash for the label configuration
+  #return nil if problem
+  def getLabelHashConf(label=@@defaultLabelName)
+    return nil unless @conf.has_key? label
+    return @conf[label]
+  end
 end
