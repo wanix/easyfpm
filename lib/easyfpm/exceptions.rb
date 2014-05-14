@@ -14,3 +14,5 @@ class EASYFPM::NoTemplateFound < StandardError; end
 class EASYFPM::InvalidTemplateType < StandardError; end
 #Raised if a configuration is not validated
 class EASYFPM::InvalidConfiguration < StandardError; end
+#Raised if a problem is detected on the system
+class EASYFPM::InvalidEnvironment < StandardError; end
