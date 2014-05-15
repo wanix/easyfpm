@@ -5,8 +5,9 @@
 ## Licence : GPL v2
 ## Source  : https://github.com/wanix/easyfpm.git
 ###############################################################################
-require "easyfpm"
+require "easyfpm/exceptions"
 require "time"
+
 class EASYFPM::PkgChangelog
 
   @@easyfpmCLRegExp={}
