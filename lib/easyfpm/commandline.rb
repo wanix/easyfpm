@@ -151,8 +151,8 @@ class EASYFPM::CommandLine
         @easyfpmconf.addValues(opt,"pkg-suffix")
       end
 
-      opts.on("--pkg-changelog [string]", String, "Package suffix") do |opt|
-        @easyfpmconf.addValues(opt,"pkg-suffix")
+      opts.on("--pkg-changelog [string]", String, "Package changelog (in the wanted format for the package)") do |opt|
+        @easyfpmconf.addValues(opt,"pkg-changelog")
       end
 
       opts.on("-v", "--verbose", "Verbose mode") do |opt|
