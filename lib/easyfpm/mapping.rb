@@ -5,7 +5,7 @@
 ## Licence : GPL v2
 ## Source  : https://github.com/wanix/easyfpm.git
 ###############################################################################
-require "easyfpm"
+require "easyfpm/exceptions"
 
 class EASYFPM::Mapping
 
