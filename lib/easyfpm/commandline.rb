@@ -167,7 +167,7 @@ class EASYFPM::CommandLine
         @dryrun = true;
       end
 
-      opts.on("--version", "Display version") do |opt|
+      opts.on("--version", "Display version and quit") do |opt|
         puts "easyfpm version #{EASYFPM::VERSION}"
         exit
       end
@@ -176,7 +176,7 @@ class EASYFPM::CommandLine
         labelListAsked=true
       end
 
-      opts.on("--help", "Display help") do |opt|
+      opts.on("--help", "Display help and quit") do |opt|
         puts opts
         exit
       end
