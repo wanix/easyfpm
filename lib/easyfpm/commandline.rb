@@ -7,6 +7,14 @@
 ###############################################################################
 require "easyfpm"
 require "optparse"
+begin
+  require "unixconfigstyle"
+rescue LoadError
+  require "rubygems"
+  require "unixconfigstyle"
+end
+
+
 class EASYFPM::CommandLine
 
   def initialize()
