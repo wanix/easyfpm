@@ -172,7 +172,7 @@ class EASYFPM::CommandLine
         exit
       end
 
-      opts.on("--label-list", String, "Display the avalibales labels and quit") do |opt|
+      opts.on("--label-list", String, "Display the availables labels and quit") do |opt|
         labelListAsked=true
       end
 
