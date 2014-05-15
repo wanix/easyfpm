@@ -334,23 +334,35 @@ class EASYFPM::Packaging
 
                 #Here we have the pkg-output-dir treatment
                 if message == "Created package" and path
-                  if File.exists makingConf["pkg-output-dir"]+"/"+path
-                    if File.exists labelconf["pkg-output-dir"]+"/"+path
-                      if labelconf.has_key? "pkg-force" and labelconf["pkg-force"] == "yes"
-                        #copie
+                  if File.exists?(makingConf["pkg-output-dir"]+"/"+path)
+                    if File.exists?(labelconf["pkg-output-dir"]+"/"+path)
+                      if labelconf.has_key?("pkg-force") and (labelconf["pkg-force"] == "yes")
+                        #Move file
+                        if (@verbose or @debug)
+                          FileUtils.mv (makingConf["pkg-output-dir"]+"/"+path, labelconf["pkg-output-dir"]+"/"+path, :force => true, :verbose => true)
+                        else
+                          FileUtils.mv (makingConf["pkg-output-dir"]+"/"+path, labelconf["pkg-output-dir"]+"/"+path, :force => true)
+                        end #if (@verbose or @debug)
+                        puts "Package #{path} moved to #{labelconf["pkg-output-dir"]}"
                       else
                         warn labelconf["pkg-output-dir"]+"/"+path+" exists, use --pkg-force yes to force copy"
-                        #raise error
-                      end
+                        returnCode = false
+                      end #if labelconf.has_key? "pkg-force" and labelconf["pkg-force"] == "yes"
                     else
-                      #copie
-                  end
+                      #Move file
+                      if (@verbose or @debug)
+                        FileUtils.mv (makingConf["pkg-output-dir"]+"/"+path, labelconf["pkg-output-dir"]+"/"+path, :force => true, :verbose => true)
+                      else
+                        FileUtils.mv (makingConf["pkg-output-dir"]+"/"+path, labelconf["pkg-output-dir"]+"/"+path, :force => true)
+                      end
+                      puts "Package #{path} moved to #{labelconf["pkg-output-dir"]}"
+                    end #if File.exists?(labelconf["pkg-output-dir"]+"/"+path)
+                  end #if File.exists?(makingConf["pkg-output-dir"]+"/"+path)
                 end #message == "Created package" and path
-
               else
                 puts line
-              end
-            end
+              end #if cbchannelmatch
+            end #while line=stdout_err.gets
             returnCode = false unless wait_thr.value.success?
           end #Open3.popen2e
         else
