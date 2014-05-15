@@ -21,6 +21,7 @@ class EASYFPM::CommandLine
     @easyfpmconf = UnixConfigStyle.new()
     @verbose = false
     @dryrun = false
+    @debug=false
     @labels = []
     parse()
   end
@@ -30,6 +31,7 @@ class EASYFPM::CommandLine
   def parse(*args)
     easyfpmconffiles = []
     options = {}
+    labelListAsked = false
     optparse = OptionParser.new do |opts|
       opts.banner = "Usage easyfpm [options]"
 
@@ -157,6 +159,10 @@ class EASYFPM::CommandLine
         @verbose = true;
       end
 
+      opts.on("--debug", "Debug mode") do |opt|
+        @debug = true;
+      end
+
       opts.on("-n", "--dry-run", "Do not exec fpm, juste print what would be done") do |opt|
         @dryrun = true;
       end
@@ -164,6 +170,10 @@ class EASYFPM::CommandLine
       opts.on("--version", "Display version") do |opt|
         puts "easyfpm version #{EASYFPM::VERSION}"
         exit
+      end
+
+      opts.on("--label-list", String, "Display the avalibales labels and quit") do |opt|
+        labelListAsked=true
       end
 
       opts.on("--help", "Display help") do |opt|
@@ -175,6 +185,18 @@ class EASYFPM::CommandLine
     optparse.parse!
     easyfpmconffiles.each do |conffile|
       @easyfpmconf.push_unix_config_file(conffile)
+    end
+    if labelListAsked
+      labels = @easyfpmconf.getSections()
+      if labels.empty?
+        puts "No labels available"
+      else
+        puts "Availables labels :"
+        labels.each do |label|
+          puts " - "+label
+        end
+      end
+      exit
     end
   end #parse
   private :parse
@@ -191,13 +213,15 @@ class EASYFPM::CommandLine
       easyfpmpkg = EASYFPM::Packaging.new(@easyfpmconf)
       easyfpmpkg.verbose = @verbose
       easyfpmpkg.dryrun = @dryrun
-      easyfpmpkg.make()
+      easyfpmpkg.debug = @debug
+      easyfpmpkg.makeAll()
     else
       @labels.each do |label|
         easyfpmpkg = EASYFPM::Packaging.new(@easyfpmconf,label)
         easyfpmpkg.verbose = @verbose
         easyfpmpkg.dryrun = @dryrun
-        easyfpmpkg.make()
+        easyfpmpkg.debug = @debug
+        easyfpmpkg.make(label)
       end
     end
   end #run
