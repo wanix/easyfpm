@@ -5,12 +5,17 @@
 ## Licence : GPL v2
 ## Source  : https://github.com/wanix/easyfpm.git
 ###############################################################################
-require "easyfpm"
-require "unixconfigstyle"
+require "easyfpm/exceptions"
+begin
+  require "unixconfigstyle"
+rescue LoadError
+  require "rubygems"
+  require "unixconfigstyle"
+end
 
 class EASYFPM::Configuration
 
-  @@templateVarExpReg = /(\{\{([\d\w\-_]+?)\}\})/
+  @@templateVarExpReg = /(\{\{([\d\w\-]+?)\}\})/
   @@defaultLabelName = "@@easyfpm-default@@"
 
   attr_reader :conf
