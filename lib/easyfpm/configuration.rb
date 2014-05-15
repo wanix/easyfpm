@@ -263,7 +263,8 @@ class EASYFPM::Configuration
 
   #return an hash for the label configuration
   #return nil if problem
-  def getLabelHashConf(label=@@defaultLabelName)
+  def getLabelHashConf(label=nil)
+    label=@@defaultLabelName if label == nil
     return nil unless @conf.has_key? label
     return @conf[label]
   end
