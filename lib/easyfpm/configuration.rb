@@ -74,7 +74,7 @@ class EASYFPM::Configuration
             @conf[label][param]=unixconfigstyle.getValues(param,confsection,true).join(" ").strip
            
           #Params for which we need to keep an array:
-          when "pkg-depends","template-value","pkg-config-files"
+          when "pkg-depends","template-value","pkg-config-files","pkg-provides","pkg-conflicts","pkg-replaces","pkg-directories","pkg-recommends","pkg-suggests"
             @conf[label][param]=unixconfigstyle.getValues(param,confsection,true)
 
         else 
@@ -195,6 +195,9 @@ class EASYFPM::Configuration
           when "pkg-output-dir"
             errorlist.push(displaylabel+"The directory #{@conf[label][param]} (given by --#{param}) MUST exists and be writable") unless (File.directory?(@conf[label][param]) and File.writable?(@conf[label][param]))
 
+          #The following parameters should be only yes or no
+          when "template-activated", "pkg-force"
+            errorlist.push(displaylabel+"The param #{param} should accept only 'yes' or 'no' (and not #{@conf[label][param]})") unless (@conf[label][param].downcase == "yes" or @conf[label][param].downcase == "no")
         end #case param
       end #conf[label].keys.each do
     end #@conf.keys.each

@@ -9,6 +9,14 @@ require "easyfpm/exceptions"
 
 class EASYFPM::Mapping
 
+  #Waited format:
+  #
+  # #A comment
+  # src-dir => newdir
+  # src-file => newdir/new-file
+  #
+  # New path can't start with /
+
   @@regexpStruct={}
   #Empty line definition
   @@regexpStruct[:emptyline] = /^\s*$/
@@ -31,6 +39,8 @@ class EASYFPM::Mapping
       linematch = @@regexpStruct[:mappingline].match(line)
       if linematch
         #We are on a mapping line
+        #Verifying that new path don't start with /
+        raise EASYFPM::InvalidConfiguration, "New path can't start with / mapping file #{mappingfile}:\n\t#{line}" if linematch[2][0] == "/"
         @hashmap[linematch[1]]=linematch[2]
       else
         raise EASYFPM::InvalidConfiguration, "The following line is not recognized in mapping file #{mappingfile}:\n\t#{line}"

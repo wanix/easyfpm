@@ -57,7 +57,7 @@ class EASYFPM::PkgChangelog
     else
         raise EASYFPM::InvalidChangelogFormat, "The format #{format} is not implemented"
     end
-  end #write
+  end #print
 
 
   #(private) Write a RPM format changelog on an IO obj

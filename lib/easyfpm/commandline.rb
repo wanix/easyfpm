@@ -42,6 +42,18 @@ class EASYFPM::CommandLine
       opts.on("--label [list by comma]", String, "Labels to work with", " (can be declared multiple times)") do |opt|
         @labels.concat(opt.split(','))
       end
+
+      opts.on("--pkg-name [string]", String, "Package name") do |opt|
+        @easyfpmconf.addValues(opt,"pkg-name")
+      end
+
+      opts.on("--pkg-type [string]", String, "Package type") do |opt|
+        @easyfpmconf.addValues(opt,"pkg-type")
+      end
+
+      opts.on("--pkg-version [string]", String, "Package version, example 1.0") do |opt|
+        @easyfpmconf.addValues(opt,"pkg-version")
+      end
  
       opts.on("--pkg-src-dir [string]", String, "Package source dir") do |opt|
         @easyfpmconf.addValues(opt,"pkg-src-dir")
@@ -51,24 +63,16 @@ class EASYFPM::CommandLine
         @easyfpmconf.addValues(opt,"pkg-mapping")
       end
 
-      opts.on("--pkg-version [string]", String, "Package version, example 1.0") do |opt|
-        @easyfpmconf.addValues(opt,"pkg-version")
+      opts.on("--pkg-prefix [string]", String, "Package installation prefix") do |opt|
+        @easyfpmconf.addValues(opt,"pkg-prefix")
       end
 
       opts.on("--pkg-output-dir [string]", String, "Destination dir for packages") do |opt|
         @easyfpmconf.addValues(opt,"pkg-output-dir")
       end
 
-      opts.on("--pkg-name [string]", String, "Package name") do |opt|
-        @easyfpmconf.addValues(opt,"pkg-name")
-      end
-
       opts.on("--pkg-description [string]", String, "Package description") do |opt|
         @easyfpmconf.addValues(opt,"pkg-description")
-      end
-
-      opts.on("--pkg-prefix [string]", String, "Package installation prefix") do |opt|
-        @easyfpmconf.addValues(opt,"pkg-prefix")
       end
 
       opts.on("--pkg-arch [string]", String, "Package architecture") do |opt|
@@ -131,16 +135,12 @@ class EASYFPM::CommandLine
         @easyfpmconf.addValues(opt,"pkg-url")
       end
 
-      opts.on("--pkg-licence [string]", String, "Package licence") do |opt|
-        @easyfpmconf.addValues(opt,"pkg-licence")
+      opts.on("--pkg-license [string]", String, "Package license") do |opt|
+        @easyfpmconf.addValues(opt,"pkg-license")
       end
 
       opts.on("--pkg-config-files [string]", String, "Files or directories considered as conf in the targeted OS", " (can be declared multiple time)") do |opt|
         @easyfpmconf.addValues(opt,"pkg-config-files")
-      end
-
-      opts.on("--pkg-type [string]", String, "Package type") do |opt|
-        @easyfpmconf.addValues(opt,"pkg-type")
       end
 
       opts.on("--pkg-depends [string]", String, "Package dependancie"," (can be declared multiple times)") do |opt|
@@ -153,6 +153,50 @@ class EASYFPM::CommandLine
 
       opts.on("--pkg-changelog [string]", String, "Package changelog (in the wanted format for the package)") do |opt|
         @easyfpmconf.addValues(opt,"pkg-changelog")
+      end
+
+      opts.on("--pkg-force [yes|no]", String, "Force package generation even if the same name exists") do |opt|
+        @easyfpmconf.addValues(opt,"pkg-force")
+      end
+
+      opts.on("--pkg-category [string]", String, "Category for this package") do |opt|
+        @easyfpmconf.addValues(opt,"pkg-category")
+      end
+
+      opts.on("--pkg-provides [string]", String, "A tag of what provides this package"," (can be declared multiple times)") do |opt|
+        @easyfpmconf.addValues(opt,"pkg-provides")
+      end
+
+      opts.on("--pkg-conflicts [string]", String, "Other packages that conflict with that one"," (can be declared multiple times)") do |opt|
+        @easyfpmconf.addValues(opt,"pkg-conflicts")
+      end
+
+      opts.on("--pkg-recommends [string]", String, "Other package to recommend"," (can be declared multiple times)") do |opt|
+        @easyfpmconf.addValues(opt,"pkg-recommends")
+      end
+
+      opts.on("--pkg-suggests [string]", String, "Other package to suggests"," (can be declared multiple times)") do |opt|
+        @easyfpmconf.addValues(opt,"pkg-suggests")
+      end
+
+      opts.on("--pkg-directories [string]", String, "Mark recursively a directory on the targeted system as being owned by the package"," (can be declared multiple times)") do |opt|
+        @easyfpmconf.addValues(opt,"pkg-directories")
+      end
+
+      opts.on("--pkg-maintainer [string]", String, "The maintainer of this package") do |opt|
+        @easyfpmconf.addValues(opt,"pkg-maintainer")
+      end
+
+      opts.on("--pkg-compression [string]", String, "The compression to use with this package (may not be possible)") do |opt|
+        @easyfpmconf.addValues(opt,"pkg-compression")
+      end
+
+      opts.on("--pkg-priority [string]", String, "The package 'priority' (depends of the targetted package type") do |opt|
+        @easyfpmconf.addValues(opt,"pkg-priority")
+      end
+
+      opts.on("--pkg-replaces [string]", String, "Other packages this package replace"," (can be declared multiple times)") do |opt|
+        @easyfpmconf.addValues(opt,"pkg-replaces")
       end
 
       opts.on("-v", "--verbose", "Verbose mode") do |opt|
@@ -209,20 +253,22 @@ class EASYFPM::CommandLine
   # Run the command line given
   #def run(*args)
   def run()
+    returnCode=true
     if @labels.empty?
       easyfpmpkg = EASYFPM::Packaging.new(@easyfpmconf)
       easyfpmpkg.verbose = @verbose
       easyfpmpkg.dryrun = @dryrun
       easyfpmpkg.debug = @debug
-      easyfpmpkg.makeAll()
+      returnCode=false unless easyfpmpkg.makeAll()
     else
       @labels.each do |label|
         easyfpmpkg = EASYFPM::Packaging.new(@easyfpmconf,label)
         easyfpmpkg.verbose = @verbose
         easyfpmpkg.dryrun = @dryrun
         easyfpmpkg.debug = @debug
-        easyfpmpkg.make(label)
+        returnCode=false unless easyfpmpkg.make(label)
       end
     end
+  return returnCode
   end #run
 end
