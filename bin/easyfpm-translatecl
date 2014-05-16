@@ -73,4 +73,5 @@ easyfpmcl.pkgname = options[:package] if options.key? :package
 easyfpmcl.distribution = options[:distribution] if options.key? :distribution
 easyfpmcl.urgency = options[:urgency] if options.key? :urgency
 
-exit(easyfpmcl.print(options[:translate]) || 0)
+exit 0 if easyfpmcl.print(options[:translate])
+exit 1

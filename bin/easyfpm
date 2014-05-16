@@ -12,5 +12,5 @@ require 'easyfpm'
 require 'easyfpm/commandline'
 
 easyfpm = EASYFPM::CommandLine.new
-
-exit(easyfpm.run() || 0)
+exit 0 if easyfpm.run()
+exit 1
