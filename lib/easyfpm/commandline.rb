@@ -269,6 +269,6 @@ class EASYFPM::CommandLine
         returnCode=false unless easyfpmpkg.make(label)
       end
     end
-  return returnCode
+    return returnCode
   end #run
 end
