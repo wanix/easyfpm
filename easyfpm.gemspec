@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name        = 'easyfpm'
-  spec.version     = '1.0.0.pre'
+  spec.version     = '0.1.0.pre'
   spec.date        = '2014-05-15'
   spec.summary     = "Wrapper for fpm"
   spec.description = <<-EOF
@@ -17,6 +17,11 @@ EOF
   spec.executables << 'easyfpm-translatecl'
   spec.homepage    = 'https://github.com/wanix/easyfpm'
   spec.license     = 'GPLv2'
+  #spec.metadata    = { "issue_tracker" => "https://github.com/wanix/easyfpm/issues" }
+  spec.extra_rdoc_files  = [ 'README.md', 'LICENSE' , 'THANKS' ]
+  spec.extra_rdoc_files += Dir.glob('doc/samples/*.cfg')
+  spec.extra_rdoc_files += Dir.glob('doc/samples/*.conf')
+  spec.extra_rdoc_files += Dir.glob('doc/samples/install_scripts/*')
   spec.required_ruby_version = '>= 1.9.1'
   spec.add_runtime_dependency 'ptools', '>=1.2.4'
   spec.add_runtime_dependency 'fpm', '>=1.1.0'
