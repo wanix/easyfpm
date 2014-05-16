@@ -18,7 +18,7 @@ EOF
   spec.homepage    = 'https://github.com/wanix/easyfpm'
   spec.license     = 'GPLv2'
   #spec.metadata    = { "issue_tracker" => "https://github.com/wanix/easyfpm/issues" }
-  spec.extra_rdoc_files  = [ 'README.md', 'LICENSE' , 'THANKS' ]
+  spec.extra_rdoc_files  = [ 'README.md', 'LICENSE' , 'THANKS' , 'changelog' ]
   spec.extra_rdoc_files += Dir.glob('doc/samples/*.cfg')
   spec.extra_rdoc_files += Dir.glob('doc/samples/*.conf')
   spec.extra_rdoc_files += Dir.glob('doc/samples/install_scripts/*')
