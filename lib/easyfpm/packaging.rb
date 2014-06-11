@@ -118,7 +118,6 @@ class EASYFPM::Packaging
           fpmconf += " --after-remove "+labelhashconf[param]
         when "pkg-iteration"
           fpmconf += " --iteration "+labelhashconf[param]
-          fpmconf += labelhashconf["pkg-suffix"] if labelhashconf.has_key? "pkg-suffix"
         when "pkg-epoch"
           fpmconf += " --epoch "+labelhashconf[param]
         when "pkg-vendor"
@@ -138,9 +137,8 @@ class EASYFPM::Packaging
             fpmconf += " -d '"+pkgdepend+"'"
           end #labelhashconf[param].each
         when "pkg-suffix"
-          #if iteration defines, suffix is with it, else it is like an iteration
-          next if labelhashconf.has_key? "pkg-iteration"
-          fpmconf += " --iteration 1"+labelhashconf[param]
+          #Due to a lack in fpm, the pkg-suffix is use only in package renaming
+          next 
         when "pkg-changelog"
           case packageType
             when "deb","rpm"
@@ -297,9 +295,11 @@ class EASYFPM::Packaging
 
       #Do we have a specific output dir ?
       # there's a bug with fpm and this feature, so easyfpm take it itself for the moment
-      if labelconf.has_key? "pkg-output-dir"
+      if labelconf.has_key? "pkg-output-dir" or labelconf.has_key? "pkg-suffix"
         #Making a new tmpdir for working in
         makingConf["pkg-output-dir"] = Dir.mktmpdir("easyfpm-output-dir")
+        #if pkg-output-dir is not defined, we have to put the result in the current dir
+        labelconf["pkg-output-dir"] = Dir.getwd unless labelconf.has_key? "pkg-output-dir"
       end
 
       #We are ready to generate the fpm command
@@ -308,7 +308,7 @@ class EASYFPM::Packaging
       puts "fpm "+fpmCmdOptions if (@verbose or @debug or @dryrun)
       
       unless @dryrun
-        if makingConf.has_key? "pkg-output-dir"
+        if makingConf.has_key? "pkg-output-dir" 
           #returnCode = system "cd "+makingConf["pkg-output-dir"]+" && fpm "+fpmCmdOptions
           Open3.popen2e("cd "+makingConf["pkg-output-dir"]+" && fpm "+fpmCmdOptions) do |stdin, stdout_err, wait_thr|
             #fpm uses Cabin::channel for logging
@@ -336,32 +336,47 @@ class EASYFPM::Packaging
 
                 #Here we have the pkg-output-dir treatment
                 if message == "Created package" and path
+                  if labelconf.has_key? "pkg-suffix"
+                    #We have to rename the package
+                    case labelconf["pkg-type"]
+                      when "rpm", "deb"
+                        #Suffix has to be fixed before arch and extension
+                        newpathmatch = /^(.+)(\.[^.]+\.[^.]+)$/.match(path)
+                        newpath=newpathmatch[1]+labelconf["pkg-suffix"]+newpathmatch[2]
+                    else
+                      #By default suffix is before extension
+                      newpathmatch = /^(.+)(\.[^.]+)$/.match(path)
+                      newpath=newpathmatch[1]+labelconf["pkg-suffix"]+newpathmatch[2]
+                    end
+                  else
+                    newpath=path
+                  end
                   if File.exists?(makingConf["pkg-output-dir"]+"/"+path)
                     puts (message+" "+makingConf["pkg-output-dir"]+"/"+path)
                     outline=nil
-                    if File.exists?(labelconf["pkg-output-dir"]+"/"+path)
+                    if File.exists?(labelconf["pkg-output-dir"]+"/"+newpath)
                       if labelconf.has_key?("pkg-force") and (labelconf["pkg-force"] == "yes")
                         #Move file
                         if (@verbose or @debug)
-                          FileUtils.mv(makingConf["pkg-output-dir"]+"/"+path, labelconf["pkg-output-dir"]+"/"+path, :force => true, :verbose => true)
+                          FileUtils.mv(makingConf["pkg-output-dir"]+"/"+path, labelconf["pkg-output-dir"]+"/"+newpath, :force => true, :verbose => true)
                         else
-                          FileUtils.mv(makingConf["pkg-output-dir"]+"/"+path, labelconf["pkg-output-dir"]+"/"+path, :force => true)
+                          FileUtils.mv(makingConf["pkg-output-dir"]+"/"+path, labelconf["pkg-output-dir"]+"/"+newpath, :force => true)
                         end #if (@verbose or @debug)
-                        puts "Package moved to #{labelconf["pkg-output-dir"]}/#{path}"
+                        puts "Package moved to #{labelconf["pkg-output-dir"]}/#{newpath}"
                         # We suppress
                       else
-                        warn labelconf["pkg-output-dir"]+"/"+path+" already exists, use '--pkg-force yes' to force copy"
+                        warn labelconf["pkg-output-dir"]+"/"+newpath+" already exists, use '--pkg-force yes' to force copy"
                         returnCode = false
                       end #if labelconf.has_key? "pkg-force" and labelconf["pkg-force"] == "yes"
                     else
                       #Move file
                       if (@verbose or @debug)
-                        FileUtils.mv(makingConf["pkg-output-dir"]+"/"+path, labelconf["pkg-output-dir"]+"/"+path, :verbose => true)
+                        FileUtils.mv(makingConf["pkg-output-dir"]+"/"+path, labelconf["pkg-output-dir"]+"/"+newpath, :verbose => true)
                       else
-                        FileUtils.mv(makingConf["pkg-output-dir"]+"/"+path, labelconf["pkg-output-dir"]+"/"+path)
+                        FileUtils.mv(makingConf["pkg-output-dir"]+"/"+path, labelconf["pkg-output-dir"]+"/"+newpath)
                       end
-                      puts "Package moved to #{labelconf["pkg-output-dir"]}/#{path}"
-                    end #if File.exists?(labelconf["pkg-output-dir"]+"/"+path)
+                      puts "Package moved to #{labelconf["pkg-output-dir"]}/#{newpath}"
+                    end #if File.exists?(labelconf["pkg-output-dir"]+"/"+newpath)
                   end #if File.exists?(makingConf["pkg-output-dir"]+"/"+path)
                 end #message == "Created package" and path
                 #We display the message if not filtered
