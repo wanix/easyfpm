@@ -339,7 +339,7 @@ class EASYFPM::Packaging
                   if labelconf.has_key? "pkg-suffix"
                     #We have to rename the package
                     case labelconf["pkg-type"]
-                      when "rpm", "deb"
+                      when "rpm" 
                         #Suffix has to be fixed before arch and extension
                         newpathmatch = /^(.+)(\.[^.]+\.[^.]+)$/.match(path)
                         newpath=newpathmatch[1]+labelconf["pkg-suffix"]+newpathmatch[2]
