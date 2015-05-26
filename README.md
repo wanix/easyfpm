@@ -77,7 +77,7 @@ Usage easyfpm [options]
 Example of config file
 ----------------------
 
-this config file can be found in esasyfpm/doc/samples/easyfpm.cfg
+this config file can be found in easyfpm/doc/samples/easyfpm.cfg
 
 ```shell
 #############################
@@ -150,8 +150,8 @@ pkg-arch=all
 template-activated=no
 
 #
-# See fpm doc for templating use in your scripts
-#template-value=oracle_group:dba
+# See fpm doc for templating use in your packages' scripts
+#template-value=oracle_group=dba
 
 #
 # Packages scripts if needed, see samples
@@ -225,13 +225,6 @@ pkg-depends=libruby-ptools >= 1.2.4
 pkg-depends=libruby-fpm >= 1.1.0
 pkg-suffix=-wheezy
 
-[gem]
-#For future use
-pkg-type=gem
-pkg-depends=ruby >= 1.9.1
-pkg-depends=unixconfigstyle >= 1.0.0
-pkg-depends=ptools >= 1.2.4
-pkg-depends=fpm >= 1.1.0
 ```
 
 Example of mapping file
@@ -314,3 +307,7 @@ After few seconds, we have 5 new packages generated in /packaging/output:
 * ExampleModule-1.0-1.el5.noarch.rpm
 * ExampleModule-1.0-1.el6.noarch.rpm
 * ExampleModule-1.0-1.el7.noarch.rpm
+
+Projects using easyfpm:
+-----------------------
+* https://github.com/wanix/mkpackage-tomcat7
