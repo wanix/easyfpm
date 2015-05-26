@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name        = 'easyfpm'
-  spec.version     = '0.3.pre'
+  spec.version     = '0.3.0.pre'
   spec.date        = '2015-05-26'
   spec.summary     = "Wrapper for fpm"
   spec.description = <<-EOF
