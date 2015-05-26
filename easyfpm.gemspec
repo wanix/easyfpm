@@ -1,7 +1,7 @@
 Gem::Specification.new do |spec|
   spec.name        = 'easyfpm'
-  spec.version     = '0.2.1.pre'
-  spec.date        = '2014-06-13'
+  spec.version     = '0.3.pre'
+  spec.date        = '2015-05-26'
   spec.summary     = "Wrapper for fpm"
   spec.description = <<-EOF
   Simplify packaging with fpm by using config files.
