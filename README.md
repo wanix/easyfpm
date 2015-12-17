@@ -1,16 +1,14 @@
-easyfpm
-=======
+# easyfpm #
 
 Methods and scripts for those who want to use fpm to make scripts packages
 
 The aim of easyfpm is to facilitate the work of administrators and permit to deliver their scripts as packages.
 
-help of the script
-------------------
+## help of the script ##
 
 this is given by --help parameter
 
-```
+``` text
 Usage easyfpm [options]
         --config-file [string]       Configuration file's path
                                       (can be declared multiple times, declarative order is priority order)
@@ -74,12 +72,11 @@ Usage easyfpm [options]
         --help                       Display help and quit
 ```
 
-Example of config file
-----------------------
+## Example of config file ##
 
 this config file can be found in easyfpm/doc/samples/easyfpm.cfg
 
-```shell
+``` ini
 #############################
 # easyfpm sample conf
 #############################
@@ -227,12 +224,11 @@ pkg-suffix=-wheezy
 
 ```
 
-Example of mapping file
------------------------
+## Example of mapping file ##
 
 this config file can be found in esasyfpm/doc/samples/easyfpm.cfg
 
-```
+``` shell
 #
 # This is a mapping sample
 #
@@ -255,14 +251,14 @@ doc => usr/share/doc/myapp
 
 ```
 
-Example of use
---------------
+## Example of use ##
 
 This tool can be used to make multiple packages in one shot.
 I made for my company a wrapper which get a module in our CSV, look for an _easyfpm dir an then execute easyfpm with _easyfpm/easyfpm.cfg as config file.
 
 consider the following module:
-```
+
+``` text
 ExampleModule
   |
   ---> _easyfpm
@@ -308,6 +304,109 @@ After few seconds, we have 5 new packages generated in /packaging/output:
 * ExampleModule-1.0-1.el6.noarch.rpm
 * ExampleModule-1.0-1.el7.noarch.rpm
 
-Projects using easyfpm:
------------------------
+## easyfpm changelog format ##
+
+the changelog accept comment lines which start with '#'
+this lines are ignored for changelog generation in specific deb or rpm format.
+
+The changelog header lines are identified by the following regexp:
+
+``` perl
+/^\s*((\d{4}-?\d{2}-?\d{2}) (\d{2}:\d{2}:\d{2} )?)?Version (\d+\.\d+(\.\d+)?(-\d+)?) (.+? )?\(((.+?)(@| at ).+?\.[\d\w]+)\)\s*$/i
+```
+
+the lines following header must be 'two spaces' separated.
+
+### Changelog Example 1 ###
+``` shell
+################################################################################
+# -- MySuperProg --
+# SRC    : http://github.com/awsome/mysuperprog.git
+# ISSUES : http://github.com/awsome/mysuperprog/issues
+################################################################################
+20151124 11:20:00 Version 1.1 John DOE (john.doe@mybox.com)
+  I had a new function
+  Merge from 1.0.1, thanks Jane Doe
+
+20151123 12:05:00 Version 1.0 John DOE (john.doe@mybox.com)
+  my first release
+  I put in it:
+    sommething
+    something else
+```
+#### Transforming Example 1 in deb format ####
+``` shell
+user@host:~$ easyfpm-translatecl -f /tmp/changelog -p mysuperprog -t deb
+mysuperprog (1.1) stable; urgency=low
+  * I had a new function
+  * Merge from 1.0.1, thanks Jane Doe
+ -- John DOE  <john.doe@mybox.com>  Tue 24 Nov 2015 11:20:00 +0100
+
+mysuperprog (1.0) stable; urgency=low
+  * my first release
+  * I put in it:
+    sommething
+    something else
+ -- John DOE  <john.doe@mybox.com>  Mon 23 Nov 2015 12:05:00 +0100
+```
+#### Transforming Example 1 in rpm format ####
+``` shell
+user@host:~$ easyfpm-translatecl -f /tmp/changelog -p mysuperprog -t rpm
+* Tue Nov 24 2015 John DOE  <john.doe@mybox.com> 1.1
+  - I had a new function
+  - Merge from 1.0.1, thanks Jane Doe
+
+* Mon Nov 23 2015 John DOE  <john.doe@mybox.com> 1.0
+  - my first release
+  - I put in it:
+    - sommething
+    - something else
+```
+
+### Changelog Example 2 ###
+``` shell
+20151124 Version 1.1 John DOE (john.doe at mybox.com)
+  I had a new function
+  Merge from 1.0.1, thanks Jane Doe
+
+20151123 Version 1.0 John DOE (john.doe at mybox.com)
+  my first release
+  I put in it:
+    sommething
+    something else
+```
+
+#### Transforming Example 2 in deb format ####
+
+``` shell
+user@host:~$ easyfpm-translatecl -f /tmp/changelog -p mysuperprog -t deb
+mysuperprog (1.1) stable; urgency=low
+  * I had a new function
+  * Merge from 1.0.1, thanks Jane Doe
+ -- John DOE  <john.doe at mybox.com>  Tue 24 Nov 2015 00:00:00 +0100
+
+mysuperprog (1.0) stable; urgency=low
+  * my first release
+  * I put in it:
+    sommething
+    something else
+ -- John DOE  <john.doe at mybox.com>  Mon 23 Nov 2015 00:00:00 +0100
+```
+
+#### Transforming Example 2 in rpm format ####
+
+``` shell
+user@host:~$ easyfpm-translatecl -f /tmp/changelog -p mysuperprog -t rpm
+* Tue Nov 24 2015 John DOE  <john.doe at mybox.com> 1.1
+  - I had a new function
+  - Merge from 1.0.1, thanks Jane Doe
+
+* Mon Nov 23 2015 John DOE  <john.doe at mybox.com> 1.0
+  - my first release
+  - I put in it:
+    - sommething
+    - something else
+```
+
+## Projects using easyfpm ##
 * https://github.com/wanix/mkpackage-tomcat7
