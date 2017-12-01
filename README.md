@@ -1,3 +1,7 @@
+[![Gem](https://img.shields.io/gem/dtv/easyfpm.svg)]()
+[![Gem](https://img.shields.io/gem/v/easyfpm.svg)]()
+[![GitHub tag](https://img.shields.io/github/tag/wanix/easyfpm.svg?maxAge=2592000)]()
+
 # easyfpm #
 
 Methods and scripts for those who want to use fpm to make scripts packages
